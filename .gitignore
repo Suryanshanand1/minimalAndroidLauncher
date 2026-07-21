@@ -1,0 +1,17 @@
+*.iml
+.gradle
+.idea
+/build
+/app/build
+/local.properties
+*.apk
+*.aab
+*.dex
+*.class
+*.bin
+*.lock
+.idea/caches/
+.idea/libraries/
+.cxx/
+captures/
+.externalNativeBuild/
