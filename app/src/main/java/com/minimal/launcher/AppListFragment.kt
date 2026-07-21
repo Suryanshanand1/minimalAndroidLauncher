@@ -166,13 +166,19 @@ class AppListFragment : Fragment() {
     }
 
     private fun uninstallApp(app: MainActivity.AppInfo) {
+        val pm = requireContext().packageManager
         val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
-            data = Uri.fromParts("package", app.packageName, null)
+            data = Uri.parse("package:${app.packageName}")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        try {
-            requireActivity().startActivity(intent)
-        } catch (_: Exception) {
-            Toast.makeText(requireContext(), "Cannot uninstall", Toast.LENGTH_SHORT).show()
+        if (intent.resolveActivity(pm) != null) {
+            startActivity(intent)
+        } else {
+            val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", app.packageName, null)
+            }
+            startActivity(settingsIntent)
+            Toast.makeText(requireContext(), "Use the system menu to uninstall", Toast.LENGTH_LONG).show()
         }
     }
 }
