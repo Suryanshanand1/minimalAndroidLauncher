@@ -165,6 +165,7 @@ class AppListFragment : Fragment() {
         startActivity(intent)
     }
 
+    @Suppress("DEPRECATION")
     private fun uninstallApp(app: MainActivity.AppInfo) {
         val pm = requireContext().packageManager
         val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
