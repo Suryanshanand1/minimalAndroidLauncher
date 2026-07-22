@@ -63,28 +63,6 @@ Build > Build Bundle(s) / APK(s) > Build APK
 
 APK output: `app/build/outputs/apk/debug/MinimalLauncher-1.0-debug.apk`
 
-## Project Structure
-
-```
-app/src/main/java/com/minimal/launcher/
-├── MainActivity.kt          — Hosts ViewPager2; applies theme; prompts default launcher
-├── LauncherPagerAdapter.kt  — Fragment adapter for swipe navigation
-├── HomeFragment.kt          — Clock + shortcuts grid
-├── AppListFragment.kt       — Full app list with search bar and long-press menu
-├── AppAdapter.kt            — RecyclerView adapter for icon grid (home shortcuts)
-├── TextAppAdapter.kt        — RecyclerView adapter for text-only app list
-├── SettingsManager.kt       — SharedPreferences wrapper for all settings
-└── SettingsFragment.kt      — Settings UI (theme, sort, toggles, timezone)
-
-app/src/main/res/layout/
-├── activity_main.xml        — ViewPager2 + settings container overlay
-├── fragment_home.xml        — Clock + shortcuts
-├── fragment_app_list.xml    — Search bar + settings button + app list
-├── fragment_settings.xml    — Settings screen layout
-├── app_item.xml             — Icon + label (home shortcuts)
-└── app_item_text.xml        — Text only (app list)
-```
-
 ## Setting as Default Launcher
 
 1. Install the APK
