@@ -1,14 +1,13 @@
 package com.minimal.launcher
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.minimal.launcher.SettingsManager.Companion.KEY_TIMEZONE
 import com.minimal.launcher.SettingsManager.Companion.SORT_ALPHA
 import com.minimal.launcher.SettingsManager.Companion.SORT_INSTALL
 import com.minimal.launcher.SettingsManager.Companion.THEME_DARK
@@ -78,15 +77,23 @@ class SettingsFragment : Fragment() {
             settingsManager.iconColorsEnabled = isChecked
         }
 
-        val timezoneInput = view.findViewById<android.widget.EditText>(R.id.timezoneInput)
-        timezoneInput.setText(settingsManager.timezone)
-        timezoneInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                settingsManager.timezone = s?.toString()?.trim() ?: SettingsManager.DEFAULT_TIMEZONE
+        val timezoneSpinner = view.findViewById<android.widget.Spinner>(R.id.timezoneSpinner)
+        val timezones = arrayOf(
+            "UTC", "US/Eastern", "US/Central", "US/Mountain", "US/Pacific",
+            "Europe/London", "Europe/Berlin", "Europe/Paris", "Europe/Moscow",
+            "Asia/Dubai", "Asia/Kolkata", "Asia/Bangkok", "Asia/Shanghai",
+            "Asia/Tokyo", "Asia/Seoul", "Australia/Sydney", "Pacific/Auckland"
+        )
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, timezones)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        timezoneSpinner.adapter = spinnerAdapter
+        timezoneSpinner.setSelection(timezones.indexOf(settingsManager.timezone).coerceAtLeast(0))
+        timezoneSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                settingsManager.timezone = timezones[position]
             }
-        })
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         return view
     }

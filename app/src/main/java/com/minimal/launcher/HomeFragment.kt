@@ -57,13 +57,6 @@ class HomeFragment : Fragment() {
         shortcutApps = mutableListOf()
         setupShortcutsGrid()
 
-        view.findViewById<View>(R.id.settingsButton).setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.settingsContainer, SettingsFragment())
-                .addToBackStack("settings")
-                .commit()
-        }
-
         return view
     }
 

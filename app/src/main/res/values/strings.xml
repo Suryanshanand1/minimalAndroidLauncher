@@ -13,5 +13,5 @@
     <string name="show_date">Show Date</string>
     <string name="enable_icon_colors">Enable Icon Colors</string>
     <string name="clock_timezone">Clock Timezone</string>
-    <string name="timezone_hint">e.g. America/New_York</string>
+    <string name="search_hint">Search apps\u2026</string>
 </resources>

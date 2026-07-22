@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +25,9 @@ class AppListFragment : Fragment() {
 
     private lateinit var appRecycler: RecyclerView
     private lateinit var allApps: MutableList<MainActivity.AppInfo>
+    private val allAppsMaster = mutableListOf<MainActivity.AppInfo>()
     private var textAdapter: TextAppAdapter? = null
+    private var searchQuery = ""
     private lateinit var settingsManager: SettingsManager
     private var installTimes: Map<String, Long> = emptyMap()
 
@@ -44,6 +48,23 @@ class AppListFragment : Fragment() {
         loadAllApps()
         setupAppGrid()
 
+        view.findViewById<View>(R.id.settingsButton).setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.settingsContainer, SettingsFragment())
+                .addToBackStack("settings")
+                .commit()
+        }
+
+        val searchInput = view.findViewById<android.widget.EditText>(R.id.searchInput)
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchQuery = s?.toString()?.trim()?.lowercase() ?: ""
+                applyFilter()
+            }
+        })
+
         return view
     }
 
@@ -57,6 +78,18 @@ class AppListFragment : Fragment() {
         super.onPause()
         requireContext().getSharedPreferences(SettingsManager.PREFS_NAME, Context.MODE_PRIVATE)
             .unregisterOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    private fun applyFilter() {
+        allApps.clear()
+        if (searchQuery.isEmpty()) {
+            allApps.addAll(allAppsMaster)
+        } else {
+            allApps.addAll(allAppsMaster.filter {
+                it.label.lowercase().contains(searchQuery)
+            })
+        }
+        textAdapter?.notifyDataSetChanged()
     }
 
     @Suppress("DEPRECATION")
@@ -92,19 +125,19 @@ class AppListFragment : Fragment() {
             emptyMap()
         }
 
-        allApps.clear()
-        allApps.addAll(launchable)
+        allAppsMaster.clear()
+        allAppsMaster.addAll(launchable)
         sortApps()
     }
 
     private fun sortApps() {
         val sorted = when (settingsManager.sortOrder) {
-            SORT_INSTALL -> allApps.sortedByDescending { installTimes[it.packageName] ?: 0L }
-            else -> allApps.sortedBy { it.label.lowercase() }
+            SORT_INSTALL -> allAppsMaster.sortedByDescending { installTimes[it.packageName] ?: 0L }
+            else -> allAppsMaster.sortedBy { it.label.lowercase() }
         }
-        allApps.clear()
-        allApps.addAll(sorted)
-        textAdapter?.notifyDataSetChanged()
+        allAppsMaster.clear()
+        allAppsMaster.addAll(sorted)
+        applyFilter()
     }
 
     private fun setupAppGrid() {

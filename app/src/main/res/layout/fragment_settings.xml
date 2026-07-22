@@ -190,15 +190,10 @@
                     android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
-                <EditText
-                    android:id="@+id/timezoneInput"
+                <Spinner
+                    android:id="@+id/timezoneSpinner"
                     android:layout_width="160dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/timezone_hint"
-                    android:inputType="text"
-                    android:textAlignment="center"
-                    android:textColor="@color/text_primary" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
