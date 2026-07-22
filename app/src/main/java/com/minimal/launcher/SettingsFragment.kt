@@ -1,17 +1,14 @@
 package com.minimal.launcher
 
-import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.minimal.launcher.SettingsManager.Companion.KEY_ICON_COLORS
-import com.minimal.launcher.SettingsManager.Companion.KEY_SHOW_DATE
-import com.minimal.launcher.SettingsManager.Companion.KEY_SORT_ORDER
-import com.minimal.launcher.SettingsManager.Companion.KEY_THEME_MODE
-import com.minimal.launcher.SettingsManager.Companion.KEY_UTC_CLOCK
+import com.minimal.launcher.SettingsManager.Companion.KEY_TIMEZONE
 import com.minimal.launcher.SettingsManager.Companion.SORT_ALPHA
 import com.minimal.launcher.SettingsManager.Companion.SORT_INSTALL
 import com.minimal.launcher.SettingsManager.Companion.THEME_DARK
@@ -80,6 +77,16 @@ class SettingsFragment : Fragment() {
         iconSwitch.setOnCheckedChangeListener { _, isChecked ->
             settingsManager.iconColorsEnabled = isChecked
         }
+
+        val timezoneInput = view.findViewById<android.widget.EditText>(R.id.timezoneInput)
+        timezoneInput.setText(settingsManager.timezone)
+        timezoneInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                settingsManager.timezone = s?.toString()?.trim() ?: SettingsManager.DEFAULT_TIMEZONE
+            }
+        })
 
         return view
     }

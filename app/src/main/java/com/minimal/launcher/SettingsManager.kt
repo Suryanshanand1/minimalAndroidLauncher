@@ -26,6 +26,10 @@ class SettingsManager(context: Context) {
         get() = prefs.getString(KEY_SORT_ORDER, SORT_ALPHA) ?: SORT_ALPHA
         set(value) = prefs.edit().putString(KEY_SORT_ORDER, value).apply()
 
+    var timezone: String
+        get() = prefs.getString(KEY_TIMEZONE, DEFAULT_TIMEZONE) ?: DEFAULT_TIMEZONE
+        set(value) = prefs.edit().putString(KEY_TIMEZONE, value).apply()
+
     companion object {
         const val PREFS_NAME = "launcher_prefs"
         const val KEY_UTC_CLOCK = "show_utc_clock"
@@ -33,6 +37,7 @@ class SettingsManager(context: Context) {
         const val KEY_ICON_COLORS = "icon_colors"
         const val KEY_THEME_MODE = "theme_mode"
         const val KEY_SORT_ORDER = "sort_order"
+        const val KEY_TIMEZONE = "timezone"
 
         const val THEME_SYSTEM = "system"
         const val THEME_LIGHT = "light"
@@ -40,5 +45,7 @@ class SettingsManager(context: Context) {
 
         const val SORT_ALPHA = "alpha"
         const val SORT_INSTALL = "install"
+
+        const val DEFAULT_TIMEZONE = "UTC"
     }
 }

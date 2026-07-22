@@ -1,12 +1,14 @@
 package com.minimal.launcher
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextClock
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,8 +16,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.minimal.launcher.SettingsManager.Companion.KEY_ICON_COLORS
 import com.minimal.launcher.SettingsManager.Companion.KEY_SHOW_DATE
+import com.minimal.launcher.SettingsManager.Companion.KEY_TIMEZONE
 import com.minimal.launcher.SettingsManager.Companion.KEY_UTC_CLOCK
 import org.json.JSONArray
+import java.util.TimeZone
 
 class HomeFragment : Fragment() {
 
@@ -23,8 +27,8 @@ class HomeFragment : Fragment() {
     private lateinit var shortcutApps: MutableList<MainActivity.AppInfo>
     private var shortcutAdapter: AppAdapter? = null
     private lateinit var dateText: TextView
-    private var utcClock: View? = null
-    private var gmtLabel: View? = null
+    private var utcClock: TextClock? = null
+    private var tzLabel: TextView? = null
     private lateinit var settingsManager: SettingsManager
 
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -32,6 +36,7 @@ class HomeFragment : Fragment() {
             KEY_UTC_CLOCK -> applyUtcClockVisibility()
             KEY_SHOW_DATE -> applyDateVisibility()
             KEY_ICON_COLORS -> applyIconColors()
+            KEY_TIMEZONE -> applyTimezone()
         }
     }
 
@@ -45,7 +50,7 @@ class HomeFragment : Fragment() {
             .format(java.util.Date())
 
         utcClock = view.findViewById(R.id.utcClock)
-        gmtLabel = view.findViewById(R.id.gmtLabel)
+        tzLabel = view.findViewById(R.id.tzLabel)
         settingsManager = SettingsManager(requireContext())
 
         shortcutsRecycler = view.findViewById(R.id.shortcutsGrid)
@@ -80,12 +85,13 @@ class HomeFragment : Fragment() {
         applyUtcClockVisibility()
         applyDateVisibility()
         applyIconColors()
+        applyTimezone()
     }
 
     private fun applyUtcClockVisibility() {
         val visible = if (settingsManager.showUtcClock) View.VISIBLE else View.GONE
         utcClock?.visibility = visible
-        gmtLabel?.visibility = visible
+        tzLabel?.visibility = visible
     }
 
     private fun applyDateVisibility() {
@@ -95,6 +101,16 @@ class HomeFragment : Fragment() {
     private fun applyIconColors() {
         shortcutAdapter?.iconColorsEnabled = settingsManager.iconColorsEnabled
         shortcutAdapter?.notifyDataSetChanged()
+    }
+
+    private fun applyTimezone() {
+        val tzId = settingsManager.timezone
+        utcClock?.timeZone = tzId
+        tzLabel?.text = try {
+            TimeZone.getTimeZone(tzId).getDisplayName(false, TimeZone.SHORT)
+        } catch (_: Exception) {
+            tzId
+        }
     }
 
     private fun setupShortcutsGrid() {
@@ -114,6 +130,11 @@ class HomeFragment : Fragment() {
             apps = shortcutApps,
             iconSizePx = iconSizePx,
             iconColorsEnabled = settingsManager.iconColorsEnabled,
+            onClick = { app ->
+                val intent = requireContext().packageManager
+                    .getLaunchIntentForPackage(app.packageName)
+                if (intent != null) startActivity(intent)
+            },
             onLongClick = { _, app ->
                 removeShortcut(app)
                 true

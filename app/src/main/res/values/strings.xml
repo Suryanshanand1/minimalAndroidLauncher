@@ -12,4 +12,6 @@
     <string name="show_utc_clock">Show UTC Clock</string>
     <string name="show_date">Show Date</string>
     <string name="enable_icon_colors">Enable Icon Colors</string>
+    <string name="clock_timezone">Clock Timezone</string>
+    <string name="timezone_hint">e.g. America/New_York</string>
 </resources>
